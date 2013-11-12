@@ -96,6 +96,7 @@ def keystone_attrs(ovr, args):
     role = uname['role'] = {}
     role['admin'] = [_role for _role in args.get('admin_roles').split('|')]
     role['admin'].append(admin_user)
+    role['admin'] = list(set(role['admin']))
 
     if args.get('add_users'):
         for usr in args.get('add_users').split(','):
@@ -109,6 +110,7 @@ def keystone_attrs(ovr, args):
             roles = uname['role'] = {}
             roles['Member'] = [_role for _role in role.split('|')]
             roles['Member'].append(name)
+            roles['Member'] = list(set(roles['Member']))
 
 
 def nova_attrs(ovr, args):
