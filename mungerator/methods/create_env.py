@@ -254,7 +254,6 @@ def glance_attrs(ovr, args):
             api['rbd_store_chunk_size'] = args.get('')
 
 
-
 def vip_attrs(ovr, args):
     """Set VIP attributes."""
 

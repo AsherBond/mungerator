@@ -17,6 +17,7 @@ from inspect import isfunction
 
 from mungerator.arguments import create_optional_args as create_opt_args
 from mungerator.arguments import create_subparsed_args as create_sub_args
+from mungerator.arguments import mungerator_args as upgrade_sub_args
 
 
 def create(subparser):
@@ -38,19 +39,15 @@ def create(subparser):
         function(_subparser)
 
 
-def upgrade_env(subparser):
+def mungerator(subparser):
     """Upgrade an Existing Environment."""
     sub = subparser.add_parser(
-        'upgrade-env',
-        help='Upgrade an environment JSON.'
+        'mungerator',
+        help='Run the mungerator on a chef target(s)'
     )
-    sub.set_defaults(upgrade_env=True)
+    sub.set_defaults(mungerator=True)
 
-
-def upgrade_node(subparser):
-    """Upgrade a Node and all its attributes."""
-    sub = subparser.add_parser(
-        'upgrade-node',
-        help='Upgrade Node Attributes.'
-    )
-    sub.set_defaults(upgrade_env=True)
+    # Load all of the options args
+    for up_arg in [uarg for uarg in getmembers(upgrade_sub_args, isfunction)]:
+        name, function = up_arg
+        function(sub)

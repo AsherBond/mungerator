@@ -87,6 +87,7 @@ def rabbit_args(par):
                           help='Erlang cookie used by RabbitMQ',
                           default='AnyLongAndRandomStringWillDo')
 
+
 def keystone_args(par):
     """Keystone."""
     key = par.add_argument_group('Keystone Configuration Group')

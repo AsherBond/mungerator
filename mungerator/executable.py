@@ -27,7 +27,8 @@ from inspect import getmembers
 from inspect import isfunction
 
 import mungerator.arguments as arguments
-import mungerator.create_methods as create_methods
+import mungerator.methods.create_env as create_methods
+import mungerator.methods.munger as mungerator_methods
 
 from arguments import path_args as path_arguments
 
@@ -78,20 +79,19 @@ def execute():
     # Build our new Environment JSON
     if ready_args.get('create_env') is True:
         create_env(ready_args)
-    elif ready_args.get('upgrade_env') is True:
-        upgrade_env(ready_args)
-    elif ready_args.get('upgrade_node') is True:
-        upgrade_node(ready_args)
+    elif ready_args.get('mungerator') is True:
+        mungerator(ready_args)
     else:
         raise SystemExit(parser.print_help())
 
 
-def upgrade_node(all_args):
-    raise SystemExit('Not Implemented.')
-
-
-def upgrade_env(all_args):
-    raise SystemExit('Not Implemented.')
+def mungerator(all_args):
+    if all_args.get('environment'):
+        mungerator_methods.environment(args=all_args)
+    elif all_args.get('node'):
+        mungerator_methods.node(args=all_args)
+    elif all_args.get('all_nodes'):
+        raise SystemExit('Not Implemented.')
 
 
 def create_env(all_args):
