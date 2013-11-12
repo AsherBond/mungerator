@@ -1,5 +1,5 @@
-Munge Openstack Chef Environment
-################################
+Munge Openstack Chef Things
+###########################
 :date: 2013-09-05 09:51
 :tags: rackspace, chef, openstack, private cloud
 :category: \*nix
