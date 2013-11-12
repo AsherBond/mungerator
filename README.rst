@@ -1,1 +1,1 @@
-readme.rst
+README
