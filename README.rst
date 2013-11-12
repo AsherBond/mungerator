@@ -15,13 +15,13 @@ This is a simple utility designed to create an Openstack Chef environment, Munge
 When using the utility may create a configuration file which will allow you to build your environment consistently with defaults per your requirements. See the provided **config.cfg** file for more information.
 
 The Application has two main purposes:
-  1. Build a JSON file which you can upload to chef for use in your Openstack Deployments. The utility has been created such that it will, by default, setup sane values. While the values provided may be sane they are **NOT** production ready. You should read over the help information as provided in the script. 
+  1. Build a **JSON** file which you can upload to chef for use in your Openstack Deployments. The utility has been created such that it will, by default, setup sane values. While the values provided may be sane they are **NOT** production ready. You should read over the help information as provided in the script.
 
-  2. Munge Attributes for an existing environment, Node, or groups of nodes. The Mungerator function has been built to upgrade  Attributes. You may need or want to "upgrade" attributes if you have an environment using "Quantum" and not "Neutron". In this case, if Quantum is found it is munged to "Neutron".
+  2. **Munge** Attributes for an existing environment, Node, or groups of nodes. The Mungerator function has been built to upgrade  Attributes. You may need or want to "upgrade" attributes if you have an environment using "Quantum" and not "Neutron". In this case, if Quantum is found it is munged to "Neutron".
 
-  * To use this application you can run the local file from the `bin` directory, provided you have `pychef` installed. If you want to install this application you can, simply run the `setup.py` file as such `python setup.py install`.
+  * To use this application you can run the local file from the ``bin`` directory, provided you have ``pychef`` installed. If you want to install this application you can, simply run the ``setup.py`` file as such ``python setup.py install``.
 
-Run `bin/mungerator.local.py -h` for more information.
+Run ``bin/mungerator.local.py -h`` for more information.
 
 
 License
