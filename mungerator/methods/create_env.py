@@ -59,6 +59,7 @@ def monit_attrs(ovr, args):
                 srv, cook = mon.split('=')
                 monit[srv] = cook
 
+
 def osnet_attrs(ovr, args):
     """Set OS Networks Attributes."""
     osnet = ovr['osops_networks'] = {}

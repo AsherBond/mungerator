@@ -10,9 +10,16 @@ Openstack Chef Environment file Generator
 General Overview
 ----------------
 
-This is a simple utility designed to build an Openstack Chef environment. The utilty will build a JSON file which you can upload to chef for use in your Openstack Deployments. The utility has been created such that it will, by default, setup sane values. While the values provided may be sane they are **NOT** production ready. You should read over the help information as provided in the script. Run ``environment_create.py -h`` for more information.
+This is a simple utility designed to build an Openstack Chef environment, Munge Node Attributes and or Munge an existing Chef Environment.
 
-You may also create a configuration file which will allow you to build your environment consistently with defaults per your requirements. See the provided **config.cfg** file for more information.
+The utilty will build a JSON file which you can upload to chef for use in your Openstack Deployments. The utility has been created such that it will, by default, setup sane values. While the values provided may be sane they are **NOT** production ready. You should read over the help information as provided in the script. Run ``environment_create.py -h`` for more information.
+
+When using the utility may create a configuration file which will allow you to build your environment consistently with defaults per your requirements. See the provided **config.cfg** file for more information.
+
+If you are Munging Attributes, this has only been built to upgrade an existing environment or Node Attributes which may use the value "Quantum" in it. In this case, if Quantum is found it is munged to "Neutron".
+
+To Munge Attributes you need to have PyChef, presently I have no setup file and the utility is not installable, but if you go get pychef from `pip` you can run the utility from the `bin` directory.
+
 
 
 License

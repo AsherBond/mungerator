@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from inspect import getmembers
-from inspect import isfunction
+import inspect
 
 from mungerator.arguments import create_optional_args as create_opt_args
 from mungerator.arguments import create_subparsed_args as create_sub_args
@@ -27,14 +26,16 @@ def create(subparser):
     sub.set_defaults(create_env=True)
 
     # Load all of the options args
-    for opt_arg in [oarg for oarg in getmembers(create_opt_args, isfunction)]:
+    functions = inspect.getmembers(create_opt_args, inspect.isfunction)
+    for opt_arg in [oarg for oarg in functions]:
         name, function = opt_arg
         function(sub)
 
     # Load all of the subparsed positional Arguments
     _subparser = sub.add_subparsers(title='Positional Arguments',
                                     metavar='Type of Network to Create')
-    for sub_arg in [sarg for sarg in getmembers(create_sub_args, isfunction)]:
+    functions = inspect.getmembers(create_sub_args, inspect.isfunction)
+    for sub_arg in [sarg for sarg in functions]:
         name, function = sub_arg
         function(_subparser)
 
@@ -48,6 +49,7 @@ def mungerator(subparser):
     sub.set_defaults(mungerator=True)
 
     # Load all of the options args
-    for up_arg in [uarg for uarg in getmembers(upgrade_sub_args, isfunction)]:
+    functions = inspect.getmembers(upgrade_sub_args, inspect.isfunction)
+    for up_arg in [uarg for uarg in functions]:
         name, function = up_arg
         function(sub)

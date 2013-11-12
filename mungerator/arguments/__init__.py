@@ -29,9 +29,9 @@ def setup_arg_parser():
                              default=None,
                              help=('Path to a Configuration file. This is'
                                    ' an optional argument used to specify'
-                                   ' Anything you may want in your environment.'
-                                   ' The file is in INI format and requires the'
-                                   ' key "[ChefOpenstack]".'))
+                                   ' Anything you may want in your'
+                                   ' environment. The file is in INI format'
+                                   ' and requires the key "[ChefOpenstack]".'))
 
     args = argparse.ArgumentParser(
         parents=[conf_parser],

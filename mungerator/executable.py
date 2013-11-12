@@ -23,8 +23,7 @@ environment.
 import ConfigParser
 import json
 
-from inspect import getmembers
-from inspect import isfunction
+import inspect
 
 import mungerator.arguments as arguments
 import mungerator.methods.create_env as create_methods
@@ -39,7 +38,8 @@ def execute():
     # Load all of the optional Arguments
     conf_parser, parser, subparser = arguments.setup_arg_parser()
 
-    for path_arg in [parg for parg in getmembers(path_arguments, isfunction)]:
+    functions = inspect.getmembers(path_arguments, inspect.isfunction)
+    for path_arg in [parg for parg in functions]:
         name, function = path_arg
         _sub_arg = getattr(path_arguments, name)
         _sub_arg(subparser)
@@ -90,8 +90,10 @@ def mungerator(all_args):
         mungerator_methods.environment(args=all_args)
     elif all_args.get('node'):
         mungerator_methods.node(args=all_args)
-    elif all_args.get('all_nodes'):
-        raise SystemExit('Not Implemented.')
+    elif all_args.get('all_nodes_in_env'):
+        mungerator_methods.all_node(args=all_args)
+    else:
+        raise SystemExit('No Command Provided.')
 
 
 def create_env(all_args):
@@ -110,7 +112,8 @@ def create_env(all_args):
     override = create_methods.set_override(base=base_env, args=all_args)
 
     # Load all of the subparsed positional Arguments
-    for cmd in [arg for arg in getmembers(create_methods, isfunction)]:
+    functions = inspect.getmembers(create_methods, inspect.isfunction)
+    for cmd in [arg for arg in functions]:
         if not any([cmd[0] == 'base_dictionary', cmd[0] == 'set_override']):
             cmd[1](override, all_args)
 

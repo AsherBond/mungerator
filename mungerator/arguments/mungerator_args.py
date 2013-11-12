@@ -26,17 +26,17 @@ def chef_args(par):
                       metavar='',
                       help='Chef Server URL, Default: "%(default)s"',
                       default='https://127.0.0.1')
-    chef.add_argument('--chef-client-key',
+    chef.add_argument('--client-key',
                       metavar='',
-                      help='Location, Default: "%(default)s"',
+                      help='Default: "%(default)s"',
                       default=ENV.get('CHEF_SERVER_PEM',
                                       '%s/admin.pem' % CHEF_HOME))
-    chef.add_argument('--chef-validator-key',
+    chef.add_argument('--validator-key',
                       metavar='',
-                      help='Location, Default: "%(default)s"',
+                      help='Default: "%(default)s"',
                       default=ENV.get('CHEF_VALIDATOR_PEM',
                                       '%s/chef-validator.pem' % CHEF_HOME))
-    chef.add_argument('--chef-client-name',
+    chef.add_argument('--client-name',
                       metavar='',
                       help='CLient Name, Default: "%(default)s"',
                       default=ENV.get('CHEF_CLIENT_NAME', 'admin'))
@@ -50,7 +50,7 @@ def chef_args(par):
                       metavar='',
                       help='Name of the chef node you want to Munge',
                       default=None)
-    mecg.add_argument('--all-nodes',
-                      help='Munge all of the nodes we can find',
-                      action='store_true',
-                      default=False)
+    mecg.add_argument('--all-nodes-in-env',
+                      metavar='',
+                      help='Munge all of the nodes in an Environment',
+                      default=None)

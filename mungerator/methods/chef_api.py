@@ -43,8 +43,9 @@ class Cheferizer(object):
         with chef.ChefAPI(self.url, self.open_client_pem, self.user):
             return chef.Node(name)
 
-    def get_all_nodes(self):
-        pass
+    def get_all_nodes(self, name):
+        with chef.ChefAPI(self.url, self.open_client_pem, self.user):
+            return chef.Search('node', q='chef_environment:%s' % name)
 
     def put_env(self, old_env, new_env):
         with chef.ChefAPI(self.url, self.open_client_pem, self.user):
@@ -58,12 +59,8 @@ class Cheferizer(object):
         with chef.ChefAPI(self.url, self.open_client_pem, self.user):
             get_old_nodes = chef.Node(old_node).list()
             if old_node in get_old_nodes.iterkeys():
-                print 'deleted old node %s' % old_node
+                print('deleted old node %s' % old_node)
                 chef.Node(old_node).delete()
-
-            print [i for i in chef.Node(old_node).list().iteritems()]
-
-            print new_node['normal']
 
             node = chef.Node(old_node).create(**new_node)
             node.save()

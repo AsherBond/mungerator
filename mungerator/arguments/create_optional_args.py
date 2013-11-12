@@ -28,9 +28,6 @@ def default_args(par):
                      help='Apply Patches that RCBOPS may Recommend.',
                      action='store_true',
                      default=False)
-
-
-    # Name of the Environment
     par.add_argument('-n',
                      '--env-name',
                      metavar='',
@@ -108,7 +105,8 @@ def keystone_args(par):
     key.add_argument('-R',
                      '--admin-roles',
                      metavar='',
-                     help='Admin Roles, Pipe Separated. Format: Role1|Role2|Role3',
+                     help=('Admin Roles, Pipe Separated. Format:'
+                           ' Role1|Role2|Role3'),
                      type=str,
                      default='admin')
     key.add_argument('--add-users',
@@ -264,7 +262,8 @@ def nova_args(par):
                      default='1000')
     nov.add_argument('--generic-delete',
                      metavar='',
-                     help='Number of DELETE\'s per Minute, Default: %(default)s',
+                     help=('Number of DELETE\'s per Minute, Default:'
+                           ' %(default)s'),
                      type=str,
                      default='1000')
     nov.add_argument('--generic-put',
@@ -274,7 +273,8 @@ def nova_args(par):
                      default='1000')
     nov.add_argument('--creates-post',
                      metavar='',
-                     help='Number of create POST\'s per Day, Default: %(default)s',
+                     help=('Number of create POST\'s per Day, Default:'
+                           ' %(default)s'),
                      type=str,
                      default='1000')
     nov.add_argument('--changes-get',

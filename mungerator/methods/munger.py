@@ -20,22 +20,34 @@ from mungerator.methods import chef_api
 
 
 def backup_attributes(backup_dict, name):
+
+    def write_backup(file_name):
+        with open(file_name, 'wb') as backup:
+            backup.write(
+                json.dumps(
+                    backup_dict, indent=2
+                )
+            )
+
+    def backeruper(file_name, file_num=0):
+        if not os.path.exists('%s.json' % file_name):
+            write_backup('%s.json' % file_name)
+        elif not os.path.exists('%s.%s.json' % (file_name, file_num)):
+            write_backup('%s.%s.json' % (file_name, file_num))
+        else:
+            file_num += 1
+            backeruper(file_name, file_num)
+
     home = os.getenv('HOME', tempfile.gettempdir())
     backup_dir = '%s%s%s' % (home, os.sep, 'mungerator_backup')
-    backup_name = '%s%s%s.json' % (backup_dir, os.sep, name)
+    backup_name = '%s%s%s' % (backup_dir, os.sep, name)
 
     print('Backup made for %s at %s' % (name, backup_name))
 
     if not os.path.exists(backup_dir):
         os.mkdir(backup_dir)
 
-    if os.path.exists(backup_name):
-        os.rename(backup_name, '%s.bak' % backup_name)
-
-    with open(backup_name, 'wb') as backup:
-        backup.write(
-            json.dumps(backup_dict, indent=2)
-        )
+    backeruper(backup_name)
 
 
 def _super_munger(mungie):
@@ -92,8 +104,8 @@ def _super_munger(mungie):
 def environment(args):
     chefserver = chef_api.Cheferizer(
         url=args.get('auth_url'),
-        client_pem=args.get('chef_client_key'),
-        user=args.get('chef_client_name')
+        client_pem=args.get('client_key'),
+        user=args.get('client_name')
     )
     chefserver.open_pem()
     env_name = args.get('environment')
@@ -105,15 +117,14 @@ def environment(args):
     )
 
     new_env = _super_munger(env_attrs)
-
     chefserver.put_env(old_env=env_name, new_env=new_env)
 
 
 def node(args):
     chefserver = chef_api.Cheferizer(
         url=args.get('auth_url'),
-        client_pem=args.get('chef_client_key'),
-        user=args.get('chef_client_name')
+        client_pem=args.get('client_key'),
+        user=args.get('client_name')
     )
     chefserver.open_pem()
     node_name = args.get('node')
@@ -128,3 +139,27 @@ def node(args):
         node_dict[attribute] = _super_munger(attrs)
 
     chefserver.put_node(old_node=node_name, new_node=node_dict)
+
+
+def all_node(args):
+    chefserver = chef_api.Cheferizer(
+        url=args.get('auth_url'),
+        client_pem=args.get('client_key'),
+        user=args.get('client_name')
+    )
+    chefserver.open_pem()
+    nodes = chefserver.get_all_nodes(
+        args.get('all_nodes_in_env')
+    )
+    all_nodes = [nd['name'] for nd in nodes if nd.get('name')]
+    for nd in all_nodes:
+        node_dict = chefserver.get_node(name=nd).to_dict()
+        for attribute in ['normal', 'default', 'override']:
+            attributes = node_dict.get(attribute).to_dict()
+            backup_attributes(
+                backup_dict=attributes,
+                name='%s_%s_Attributes' % (nd, attribute)
+            )
+            node_dict[attribute] = _super_munger(attributes)
+
+        chefserver.put_node(old_node=nd, new_node=node_dict)
