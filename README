@@ -1,11 +1,11 @@
-Creates Openstack Chef Environment
-##################################
+Munge Openstack Chef Environment
+################################
 :date: 2013-09-05 09:51
 :tags: rackspace, chef, openstack, private cloud
 :category: \*nix
 
-Openstack Chef Environment file Generator
-=========================================
+Openstack Chef Munger
+=====================
 
 General Overview
 ----------------
@@ -19,7 +19,7 @@ The Application has two main purposes:
 
   2. Munge Attributes for an existing environment, Node, or groups of nodes. The Mungerator function has been built to upgrade  Attributes. You may need or want to "upgrade" attributes if you have an environment using "Quantum" and not "Neutron". In this case, if Quantum is found it is munged to "Neutron".
 
-  * To Munge Attributes you need to have PyChef, presently I have no setup file and the utility is not installable, but if you go get pychef from `pip` you can run the utility from the `bin` directory.
+  * To use this application you can run the local file from the `bin` directory, provided you have `pychef` installed. If you want to install this application you can, simply run the `setup.py` file as such `python setup.py install`.
 
 Run `bin/mungerator.local.py -h` for more information.
 
