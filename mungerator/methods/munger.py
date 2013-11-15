@@ -69,7 +69,7 @@ def quantum_db_check(args, env_attrs):
 
 
 def _super_munger(mungie):
-    exempt = ['name', 'database', 'db']
+    exempt = ['name', 'database', 'db', 'username']
 
     def check_replace(rv):
         if 'quantum' in rv:
