@@ -24,6 +24,11 @@ The Application has two main purposes:
 Run ``bin/mungerator.local.py -h`` for more information.
 
 
+Installation:
+  To run the applcation you will need to have ``python-dev``. You do not need to install the application to run the application. Once you have pychef and python-dev install you can go to the bin directory and run the munger.
+  If you would like to install the application, install the package ``python-dev`` and ``python-setuptools`` then from the mungerator directory run ``python setup.py install``.
+
+
 License
 ^^^^^^^
 
