@@ -45,7 +45,10 @@ def chef_args(par):
                       help=('Username for the Neutron Database,'
                             ' Default: "%(default)s"'),
                       default='quantum')
-
+    chef.add_argument('--disable-pkg-upgrades',
+                      help='In The Environment Disable Package Upgrades',
+                      action='store_false',
+                      default=True)
 
     mecg = chef.add_mutually_exclusive_group(required=True)
     mecg.add_argument('--environment',
