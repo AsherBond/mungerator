@@ -54,9 +54,9 @@ def quantum_db_check(args, env_attrs):
     overrides = env_attrs.get('override_attributes')
     if 'quantum' in overrides:
         new_neutron = overrides.get('quantum')
-        if new_neutron:
+        if new_neutron is not None:
             database = new_neutron.get('db')
-            if database:
+            if database is not None:
                 if 'name' not in database:
                     database['name'] = args.get('db_name')
                 if 'username' not in database:
