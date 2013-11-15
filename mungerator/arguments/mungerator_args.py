@@ -48,7 +48,7 @@ def chef_args(par):
     chef.add_argument('--disable-pkg-upgrades',
                       help='In The Environment Disable Package Upgrades',
                       action='store_false',
-                      default=True)
+                      default=False)
 
     mecg = chef.add_mutually_exclusive_group(required=True)
     mecg.add_argument('--environment',

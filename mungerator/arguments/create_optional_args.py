@@ -19,7 +19,7 @@ def default_args(par):
     par.add_argument('--disable-pkg-upgrades',
                      help='In The Environment Disable Package Upgrades',
                      action='store_false',
-                     default=True)
+                     default=False)
 
     par.add_argument('--print-only',
                      help='Print the output json, NOT Write the File',
