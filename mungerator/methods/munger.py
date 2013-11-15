@@ -50,6 +50,24 @@ def backup_attributes(backup_dict, name):
     backeruper(backup_name)
 
 
+def quantum_db_check(args, env_attrs):
+    overrides = env_attrs.get('override_attributes')
+    if 'quantum' in overrides:
+        new_neutron = overrides.get('quantum')
+        if new_neutron:
+            database = new_neutron.get('db')
+            if database:
+                if 'name' not in database:
+                    database['name'] = args.get('db_name')
+                if 'username' not in database:
+                    database['username'] = args.get('db_username')
+            else:
+                db = new_neutron['db'] = {}
+                db['name'] = args.get('db_name')
+                db['username'] = args.get('db_username')
+    return env_attrs
+
+
 def _super_munger(mungie):
     exempt = ['name', 'database', 'db']
 
@@ -101,22 +119,22 @@ def _super_munger(mungie):
     return mungie
 
 
-def environment(args):
+def environment(args, env_name=None):
     chefserver = chef_api.Cheferizer(
         url=args.get('auth_url'),
         client_pem=args.get('client_key'),
         user=args.get('client_name')
     )
     chefserver.open_pem()
-    env_name = args.get('environment')
+    if env_name is None:
+        env_name = args.get('environment')
     env = chefserver.get_env(name=env_name)
     env_attrs = env.to_dict()
     backup_attributes(
         backup_dict=env_attrs,
         name='%s_Environment' % env_name
     )
-
-    new_env = _super_munger(env_attrs)
+    new_env = _super_munger(quantum_db_check(args, env_attrs))
     chefserver.put_env(old_env=env_name, new_env=new_env)
 
 
@@ -142,6 +160,8 @@ def node(args):
 
 
 def all_node(args):
+    environment(args, env_name=args.get('all_nodes_in_env'))
+
     chefserver = chef_api.Cheferizer(
         url=args.get('auth_url'),
         client_pem=args.get('client_key'),

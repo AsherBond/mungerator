@@ -31,15 +31,21 @@ def chef_args(par):
                       help='Default: "%(default)s"',
                       default=ENV.get('CHEF_SERVER_PEM',
                                       '%s/admin.pem' % CHEF_HOME))
-    chef.add_argument('--validator-key',
-                      metavar='',
-                      help='Default: "%(default)s"',
-                      default=ENV.get('CHEF_VALIDATOR_PEM',
-                                      '%s/chef-validator.pem' % CHEF_HOME))
     chef.add_argument('--client-name',
                       metavar='',
                       help='CLient Name, Default: "%(default)s"',
                       default=ENV.get('CHEF_CLIENT_NAME', 'admin'))
+    chef.add_argument('--db-name',
+                      metavar='',
+                      help=('Name for the Neutron Database,'
+                            ' Default: "%(default)s"'),
+                      default='quantum')
+    chef.add_argument('--db-username',
+                      metavar='',
+                      help=('Username for the Neutron Database,'
+                            ' Default: "%(default)s"'),
+                      default='quantum')
+
 
     mecg = chef.add_mutually_exclusive_group(required=True)
     mecg.add_argument('--environment',
