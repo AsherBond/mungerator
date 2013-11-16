@@ -5,8 +5,10 @@ Upgrading from Grizzly to Havana
 :category: \*nix
 
 
-Upgrade notes:
--> General
+Upgrade notes
+~~~~~~~~~~~~~
+
+General:
   When upgrading you may want to purge all of the cached chef cookbooks from the system, this simply eliminates all of the possible issues with leftover and or unmodified cookbooks when chef-client begins compiling the cookbooks. ``for i in /var/chef/cache/cookbooks/*;do rm -rf $i; done``.
 
   Being that the system is about to go through a major set of package upgrades, this may be a good time to upgrade all of the distribution packages upgrades prior to performing the cookbook upgrade and subsequent chef client run.
@@ -26,21 +28,29 @@ Running the Mungerator:
   This can all be done on a per-node basis as well as run on a single environment without running on any nodes. Please see ``mungerator --help`` for more information.
 
 
-Issues:
-  Ubuntu:
-  -> Notes
-    Clean all packages ``apt-get clean``
+Known Issues
+============
 
-  -> Ceilometer
-    Install python-warlock, python-novaclient, babel. run ``apt-get -y install python-warlock python-novaclient babel``. These packages seem to not be updated as deps in the new packages. This is likely a bug upstream with the packages.  Also we should look at including these packages in the cookbook as supplementary packages so that even if ubuntu does not fix the issue, we have our deployment covered.
 
-  -> Horizon
-    Install openstack-dashboard python-django-horizon. run ``apt-get install openstack-dashboard python-django-horizon`` These packages also seem to not be updated when the stock openstack-dashboard is upgraded. This is also likely an issue with the upstream packages. we should add them to the cookbooks to cover our selves when a user is upgrading.
+Ubuntu
+^^^^^^
 
-  RHEL:
-  -> Notes
-    On upgrade the YOU MUST add the RDO havana repo prior to attempting the upgrade. This will remove the grizzly RDO repo information stored in "/etc/yum.repos.d/rdo-release.repo". ``sudo yum install -y http://rdo.fedorapeople.org/openstack-havana/rdo-release-havana.rpm``
+-> Notes
+  Not required but I recommend it, clean all packages before running the upgrade. run ``apt-get clean``
 
-    Once the repos are added, purge the old packages and headers from yum. ``yum clean headers && yum clean packages``.
+-> Ceilometer
+  Install python-warlock, python-novaclient, babel. run ``apt-get -y install python-warlock python-novaclient babel``. These packages seem to not be updated as deps in the new packages. This is likely a bug upstream with the packages.  Also we should look at including these packages in the cookbook as supplementary packages so that even if ubuntu does not fix the issue, we have our deployment covered.
 
-    In order to upgrade to the Havana Cookbooks the you MUST install the new Havana RDO kernel. On CentOS6 / RHEL6 we will ONLY support kernel **kernel-2.6.32-358.123.2.openstack.el6.x86_64** as provided by redhat. The reason for this is not only due to requirements in neutron but also requirements in our present HA solution. ``yum install kernel``. If a new kernel is installed, Reboot the system before continuing.
+-> Horizon
+  Install openstack-dashboard python-django-horizon. run ``apt-get install openstack-dashboard python-django-horizon`` These packages also seem to not be updated when the stock openstack-dashboard is upgraded. This is also likely an issue with the upstream packages. we should add them to the cookbooks to cover our selves when a user is upgrading.
+
+
+RHEL
+^^^^
+
+-> Notes
+  On upgrade the YOU MUST add the RDO havana repo prior to attempting the upgrade. This will remove the grizzly RDO repo information stored in "/etc/yum.repos.d/rdo-release.repo". ``sudo yum install -y http://rdo.fedorapeople.org/openstack-havana/rdo-release-havana.rpm``
+
+  Once the repos are added, purge the old packages and headers from yum. ``yum clean headers && yum clean packages``.
+
+  In order to upgrade to the Havana Cookbooks the you MUST install the new Havana RDO kernel. On CentOS6 / RHEL6 we will ONLY support kernel **kernel-2.6.32-358.123.2.openstack.el6.x86_64** as provided by redhat. The reason for this is not only due to requirements in neutron but also requirements in our present HA solution. ``yum install kernel``. If a new kernel is installed, Reboot the system before continuing.
