@@ -23,8 +23,16 @@ Cookbook Upgrades:
 
 
 Running the Mungerator:
+  Here is how to get the Mungerator. ``git clone https://github.com/cloudnull/rcbops_mungerator mungerator``.
+
+  Once you have the mungerator you can either install it or you can simply run it. No matter what you decide you will need to have *python-dev* installed. Here is how to get python-dev
+
+  On RHEL run ``yum install python-devel``
+  On Ubuntu run ``apt-get install python-dev``
+
   The Mungerator needs to run on the environment in order to ensure s/quantum/neutron/g. Example mungeration command:
   ``mungerator mungerator --client-key /etc/chef-server/admin.pem --auth-url https://127.0.0.1:4000 --all-nodes-in-env allinoneinone``
+
   This can all be done on a per-node basis as well as run on a single environment without running on any nodes. Please see ``mungerator --help`` for more information.
 
 
