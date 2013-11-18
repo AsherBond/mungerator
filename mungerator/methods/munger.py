@@ -52,10 +52,15 @@ def backup_attributes(backup_dict, name):
 
 def quantum_db_check(args, env_attrs):
     overrides = env_attrs.get('override_attributes')
-    if args.get('disable_pkg_upgrades') is True:
-        overrides['do_package_upgrades'] = False
+    if overrides.get('osops'):
+        osops = overrides['osops']
     else:
-        overrides['do_package_upgrades'] = True
+        osops = overrides['osops'] = {}
+
+    if args.get('disable_pkg_upgrades') is True:
+        osops['do_package_upgrades'] = False
+    else:
+        osops['do_package_upgrades'] = True
 
     if 'quantum' in overrides:
         new_neutron = overrides.get('quantum')
