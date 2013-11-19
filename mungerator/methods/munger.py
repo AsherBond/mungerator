@@ -19,6 +19,11 @@ import tempfile
 from mungerator.methods import chef_api
 
 
+def _notice(message):
+    line = ''.join(['=' for _ in range(len(message))])
+    return '%s\n%s\n%s' % (line, message, line)
+
+
 def open_chef_connection(args):
     chefserver = chef_api.Cheferizer(
         url=args.get('auth_url'),
@@ -227,15 +232,17 @@ def rhel_check(args, servers=None):
                 % node
             )
 
-        if args.get('kernel') != version:
+        supported_kernel = args.get('kernel')
+        if supported_kernel != version:
             upgrade_me[name] = version
 
     if upgrade_me:
-        print('===============================================\n'
-              'Nodes that will likely need the Kernel Upgraded\n'
-              '===============================================')
+        msg = ('Nodes that likely need the Kernel Upgraded, RAX Supports "%s"'
+               % supported_kernel)
+        print(_notice(message=msg))
         for key, value in upgrade_me.iteritems():
-            print('Node: %s\t| Current Kernel: %s' % (key, value))
+            notice = 'Node: %s|Current Kernel: %s' % (key, value)
+            print(notice.replace('|', '\t| '))
 
 
 def quantum_detect(args):
@@ -260,9 +267,7 @@ def quantum_detect(args):
                      'password': db.get('password', 'UNKNOWN')}
                 )
     if detected:
-        print('================================\n'
-              'QUANTUM FOUND IN THE ENVIRONMENT\n'
-              '================================')
+        print(_notice(message='QUANTUM FOUND IN THE ENVIRONMENT'))
         for item in detected:
             notice = ('Node: %(node)s|DB Name: %(db_name)s|'
                       'Username: %(username)s|Password: %(password)s' % item)
