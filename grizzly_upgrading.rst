@@ -31,7 +31,7 @@ Running the Mungerator:
   On Ubuntu run ``apt-get install python-dev``
 
   The Mungerator needs to run on the environment in order to ensure s/quantum/neutron/g. Example mungeration command:
-  ``mungerator mungerator --client-key /etc/chef-server/admin.pem --auth-url https://127.0.0.1:4000 --all-nodes-in-env allinoneinone``
+  ``mungerator munger --client-key /etc/chef-server/admin.pem --auth-url https://127.0.0.1:4000 all-nodes-in-env --name allinoneinone``
 
   This can all be done on a per-node basis as well as run on a single environment without running on any nodes. Please see ``mungerator --help`` for more information.
 

@@ -23,3 +23,4 @@ __status__ = "Production"
 __appname__ = "mungerator"
 __description__ = 'Build a Chef Environment for Openstack'
 __url__ = 'https://github.com/cloudnull/RCBOPS_mungerator.git'
+__supported_rhel_kernel__ = '2.6.32-358.23.2.el6.x86_64'

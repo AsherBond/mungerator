@@ -16,11 +16,10 @@
 def default_args(par):
     """Setup for general Arguments."""
 
-    par.add_argument('--disable-pkg-upgrades',
-                     help='In The Environment Disable Package Upgrades',
-                     action='store_false',
+    par.add_argument('--do-package-upgrades',
+                     help='In The Environment Enable Package Upgrades',
+                     action='store_true',
                      default=False)
-
     par.add_argument('--print-only',
                      help='Print the output json, NOT Write the File',
                      action='store_true',

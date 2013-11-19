@@ -76,7 +76,6 @@ def execute():
     ready_args = dict([(key, value) for key, value in parsed_args.iteritems()
                       if value is not None])
 
-    # Build our new Environment JSON
     if ready_args.get('create_env') is True:
         create_env(ready_args)
     elif ready_args.get('mungerator') is True:
@@ -86,12 +85,17 @@ def execute():
 
 
 def mungerator(all_args):
-    if all_args.get('environment'):
-        mungerator_methods.environment(args=all_args)
-    elif all_args.get('node'):
-        mungerator_methods.node(args=all_args)
-    elif all_args.get('all_nodes_in_env'):
-        mungerator_methods.all_node(args=all_args)
+    actions = ['environment',
+               'all_nodes_in_env',
+               'node',
+               'rhel_check',
+               'quantum_detect']
+
+    for action in actions:
+        if all_args.get(action) is True:
+            method = getattr(mungerator_methods, action)
+            method(args=all_args)
+            break
     else:
         raise SystemExit('No Command Provided.')
 

@@ -48,18 +48,4 @@ def chef_args(par):
     chef.add_argument('--disable-pkg-upgrades',
                       help='In The Environment Disable Package Upgrades',
                       action='store_false',
-                      default=False)
-
-    mecg = chef.add_mutually_exclusive_group(required=True)
-    mecg.add_argument('--environment',
-                      metavar='',
-                      help='Name of the chef environment you want to Munge',
-                      default=None)
-    mecg.add_argument('--node',
-                      metavar='',
-                      help='Name of the chef node you want to Munge',
-                      default=None)
-    mecg.add_argument('--all-nodes-in-env',
-                      metavar='',
-                      help='Munge all of the nodes in an Environment',
-                      default=None)
+                      default=True)

@@ -16,7 +16,8 @@ import inspect
 
 from mungerator.arguments import create_optional_args as create_opt_args
 from mungerator.arguments import create_subparsed_args as create_sub_args
-from mungerator.arguments import mungerator_args as upgrade_sub_args
+from mungerator.arguments import munger_optional_args as munger_opt_args
+from mungerator.arguments import munger_subparsed_args as munger_sub_args
 
 
 def create(subparser):
@@ -43,13 +44,23 @@ def create(subparser):
 def mungerator(subparser):
     """Upgrade an Existing Environment."""
     sub = subparser.add_parser(
-        'mungerator',
-        help='Run the mungerator on a chef target(s)'
+        'munger',
+        help='Run the mungerator on chef target(s)'
     )
     sub.set_defaults(mungerator=True)
 
     # Load all of the options args
-    functions = inspect.getmembers(upgrade_sub_args, inspect.isfunction)
+    functions = inspect.getmembers(munger_opt_args, inspect.isfunction)
     for up_arg in [uarg for uarg in functions]:
         name, function = up_arg
         function(sub)
+
+
+    _subparser = sub.add_subparsers(title='Positional Arguments',
+                                    metavar='Type of Mungeration to Perform')
+    # Load all of the options args
+    functions = inspect.getmembers(munger_sub_args, inspect.isfunction)
+    for up_arg in [uarg for uarg in functions]:
+        name, function = up_arg
+        if name.endswith('args'):
+            function(_subparser)

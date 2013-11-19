@@ -64,3 +64,13 @@ class Cheferizer(object):
 
             node = chef.Node(old_node).create(**new_node)
             node.save()
+
+    def rhel_search(self, env_name):
+        with chef.ChefAPI(self.url, self.open_client_pem, self.user):
+            return chef.Search(
+                'node',
+                q=('platform:redhat '
+                   'OR platform:centos '
+                   'AND chef_environment:%s'
+                   % env_name)
+            )

@@ -19,6 +19,16 @@ import tempfile
 from mungerator.methods import chef_api
 
 
+def open_chef_connection(args):
+    chefserver = chef_api.Cheferizer(
+        url=args.get('auth_url'),
+        client_pem=args.get('client_key'),
+        user=args.get('client_name')
+    )
+    chefserver.open_pem()
+    return chefserver
+
+
 def backup_attributes(backup_dict, name):
 
     def write_backup(file_name):
@@ -50,7 +60,7 @@ def backup_attributes(backup_dict, name):
     backeruper(backup_name)
 
 
-def quantum_db_check(args, env_attrs):
+def _package_upgrades(args, env_attrs):
     overrides = env_attrs.get('override_attributes')
     if overrides.get('osops'):
         osops = overrides['osops']
@@ -61,7 +71,11 @@ def quantum_db_check(args, env_attrs):
         osops['do_package_upgrades'] = False
     else:
         osops['do_package_upgrades'] = True
+    return env_attrs
 
+
+def quantum_db_check(args, env_attrs):
+    overrides = env_attrs.get('override_attributes')
     if 'quantum' in overrides:
         new_neutron = overrides.get('quantum')
         if new_neutron is not None:
@@ -130,32 +144,29 @@ def _super_munger(mungie):
 
 
 def environment(args, env_name=None):
-    chefserver = chef_api.Cheferizer(
-        url=args.get('auth_url'),
-        client_pem=args.get('client_key'),
-        user=args.get('client_name')
-    )
-    chefserver.open_pem()
+    chefserver = open_chef_connection(args)
     if env_name is None:
-        env_name = args.get('environment')
+        env_name = args.get('name')
     env = chefserver.get_env(name=env_name)
     env_attrs = env.to_dict()
     backup_attributes(
         backup_dict=env_attrs,
         name='%s_Environment' % env_name
     )
-    new_env = _super_munger(quantum_db_check(args, env_attrs))
+    new_env = _package_upgrades(
+        args=args, env_attrs=_super_munger(
+            quantum_db_check(
+                args, env_attrs
+            )
+        )
+    )
+
     chefserver.put_env(old_env=env_name, new_env=new_env)
 
 
 def node(args):
-    chefserver = chef_api.Cheferizer(
-        url=args.get('auth_url'),
-        client_pem=args.get('client_key'),
-        user=args.get('client_name')
-    )
-    chefserver.open_pem()
-    node_name = args.get('node')
+    chefserver = open_chef_connection(args)
+    node_name = args.get('name')
     node = chefserver.get_node(name=node_name)
     node_dict = node.to_dict()
     for attribute in ['normal', 'default', 'override']:
@@ -169,17 +180,12 @@ def node(args):
     chefserver.put_node(old_node=node_name, new_node=node_dict)
 
 
-def all_node(args):
-    environment(args, env_name=args.get('all_nodes_in_env'))
+def all_nodes_in_env(args):
+    environment(args, env_name=args.get('name'))
 
-    chefserver = chef_api.Cheferizer(
-        url=args.get('auth_url'),
-        client_pem=args.get('client_key'),
-        user=args.get('client_name')
-    )
-    chefserver.open_pem()
+    chefserver = open_chef_connection(args)
     nodes = chefserver.get_all_nodes(
-        args.get('all_nodes_in_env')
+        args.get('name')
     )
     all_nodes = [nd['name'] for nd in nodes if nd.get('name')]
     for nd in all_nodes:
@@ -193,3 +199,68 @@ def all_node(args):
             node_dict[attribute] = _super_munger(attributes)
 
         chefserver.put_node(old_node=nd, new_node=node_dict)
+
+    if args.get('disable_rhel_check') is False:
+        rhel_check(args, servers=nodes)
+
+
+def rhel_check(args, servers=None):
+    upgrade_me = {}
+    if servers is None:
+        chefserver = open_chef_connection(args)
+        servers = chefserver.rhel_search(env_name=args.get('name'))
+    for node in servers:
+        name = node['name']
+        auto = node.get('automatic')
+        if auto:
+            kernel = auto.get('kernel')
+            if kernel:
+                version = kernel.get('release')
+            else:
+                raise SystemExit(
+                    'Not able to retrieve the Kernel Version from Node %s'
+                    % node
+                )
+        else:
+            raise SystemExit(
+                'Not able to retrieve the Kernel Version from Node %s'
+                % node
+            )
+
+        if args.get('kernel') != version:
+            upgrade_me[name] = 'Kernel Version %s' % version
+
+    if upgrade_me:
+        print('===============================================\n'
+              'Nodes that will likely need the Kernel Upgraded\n'
+              '===============================================\n')
+        for key, value in upgrade_me.iteritems():
+            print('Node: %s\t| Kernel: %s' % (key, value))
+
+
+def quantum_detect(args):
+    chefserver = open_chef_connection(args)
+    nodes = chefserver.get_all_nodes(
+        args.get('name')
+    )
+    detected = []
+    for node in nodes:
+        for attribute in ['normal', 'default', 'override']:
+            if attribute in node:
+                if 'quantum' in node[attribute]:
+                    db = node[attribute]['quantum'].get('db')
+                    if db is not None:
+                        detected.append(
+                            {'node': node.get('name', 'UNKNOWN'),
+                             'dbname' : db.get('name', 'UNKNOWN'),
+                             'username': db.get('usesr', 'UNKNOWN'),
+                             'password': db.get('password', 'UNKNOWN')}
+                        )
+    if detected:
+        print('================================\n'
+              'QUANTUM FOUND IN THE ENVIRONMENT\n'
+              '================================\n')
+        for item in detected:
+            notice = ('Node: %(node)s|DB Name: %(dbname)s|'
+                      'Username: %(username)s|Password: %(password)s' % item)
+            print(notice.replace('|', '\t| '))

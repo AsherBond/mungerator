@@ -27,7 +27,9 @@ def set_override(base, args):
     """Set the Default Override Attribute."""
     ovr = base['override_attributes']
     ovr['developer_mode'] = args.get('developer_mode')
-    ovr['apply_patches'] = args.get('apply_patches')
+    osops = ovr['osops'] = {}
+    osops['apply_patches'] = args.get('apply_patches')
+    osops['do_package_upgrades'] = args.get('do_package_upgrades')
     return ovr
 
 
