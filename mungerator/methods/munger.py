@@ -228,14 +228,14 @@ def rhel_check(args, servers=None):
             )
 
         if args.get('kernel') != version:
-            upgrade_me[name] = 'Kernel Version %s' % version
+            upgrade_me[name] = version
 
     if upgrade_me:
         print('===============================================\n'
               'Nodes that will likely need the Kernel Upgraded\n'
-              '===============================================\n')
+              '===============================================')
         for key, value in upgrade_me.iteritems():
-            print('Node: %s\t| Kernel: %s' % (key, value))
+            print('Node: %s\t| Current Kernel: %s' % (key, value))
 
 
 def quantum_detect(args):
@@ -243,24 +243,27 @@ def quantum_detect(args):
     nodes = chefserver.get_all_nodes(
         args.get('name')
     )
+
+    all_nodes = [nd['name'] for nd in nodes if nd.get('name')]
     detected = []
-    for node in nodes:
-        for attribute in ['normal', 'default', 'override']:
-            if attribute in node:
-                if 'quantum' in node[attribute]:
-                    db = node[attribute]['quantum'].get('db')
-                    if db is not None:
-                        detected.append(
-                            {'node': node.get('name', 'UNKNOWN'),
-                             'dbname' : db.get('name', 'UNKNOWN'),
-                             'username': db.get('usesr', 'UNKNOWN'),
-                             'password': db.get('password', 'UNKNOWN')}
-                        )
+
+    for node_name in all_nodes:
+        node = chefserver.get_node(name=node_name)
+        quantum = node.get('quantum')
+        if quantum is not None:
+            db = quantum.get('db')
+            if db is not None:
+                detected.append(
+                    {'node': node_name,
+                     'db_name': db.get('name', 'UNKNOWN'),
+                     'username': db.get('usesr', 'UNKNOWN'),
+                     'password': db.get('password', 'UNKNOWN')}
+                )
     if detected:
         print('================================\n'
               'QUANTUM FOUND IN THE ENVIRONMENT\n'
-              '================================\n')
+              '================================')
         for item in detected:
-            notice = ('Node: %(node)s|DB Name: %(dbname)s|'
+            notice = ('Node: %(node)s|DB Name: %(db_name)s|'
                       'Username: %(username)s|Password: %(password)s' % item)
             print(notice.replace('|', '\t| '))
