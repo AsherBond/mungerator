@@ -55,7 +55,6 @@ def mungerator(subparser):
         name, function = up_arg
         function(sub)
 
-
     _subparser = sub.add_subparsers(title='Positional Arguments',
                                     metavar='Type of Mungeration to Perform')
     # Load all of the options args
