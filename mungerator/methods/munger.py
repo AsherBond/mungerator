@@ -20,11 +20,15 @@ from mungerator.methods import chef_api
 
 
 def _notice(message):
+    """Return a formatted string with information."""
+
     line = ''.join(['=' for _ in range(len(message))])
     return '%s\n%s\n%s' % (line, message, line)
 
 
 def open_chef_connection(args):
+    """Create a connection to chef server and terturn the connection."""
+
     chefserver = chef_api.Cheferizer(
         url=args.get('auth_url'),
         client_pem=args.get('client_key'),
@@ -35,8 +39,11 @@ def open_chef_connection(args):
 
 
 def backup_attributes(backup_dict, name):
+    """Save chef attributes prior to starting the run."""
 
     def write_backup(file_name):
+        """Write attributes to a file."""
+
         with open(file_name, 'wb') as backup:
             backup.write(
                 json.dumps(
@@ -45,6 +52,8 @@ def backup_attributes(backup_dict, name):
             )
 
     def backeruper(file_name, file_num=0):
+        """Ensure that we never overwrite an existing backup."""
+
         if not os.path.exists('%s.json' % file_name):
             write_backup('%s.json' % file_name)
         elif not os.path.exists('%s.%s.json' % (file_name, file_num)):
@@ -66,6 +75,8 @@ def backup_attributes(backup_dict, name):
 
 
 def _package_upgrades(args, env_attrs):
+    """Set whether package Upgrades are done."""
+
     overrides = env_attrs.get('override_attributes')
     if overrides.get('osops'):
         osops = overrides['osops']
@@ -80,6 +91,8 @@ def _package_upgrades(args, env_attrs):
 
 
 def quantum_name_check(args, env_attrs):
+    """Check all attributes for the quantum name if its found."""
+
     overrides = env_attrs.get('override_attributes')
     if 'quantum' in overrides:
         new_neutron = overrides.get('quantum')
@@ -103,15 +116,21 @@ def quantum_name_check(args, env_attrs):
 
 
 def _super_munger(mungie):
+    """Munge all attributes except the ones in the except list."""
+
     exempt = ['name', 'database', 'db', 'username', 'service_user']
 
     def check_replace(rv):
+        """If quantum is found replace it."""
+
         if 'quantum' in rv:
             return rv.replace("quantum", "neutron"), True
         else:
             return rv, False
 
     def replacer(replace_value, key=None):
+        """Run the replace operation."""
+
         if key is not None:
             if key not in exempt:
                 return check_replace(replace_value)
@@ -121,6 +140,8 @@ def _super_munger(mungie):
             return check_replace(replace_value)
 
     def lister(list_value):
+        """If the returned value is a list examine the contents and route."""
+
         for item in list_value:
             if isinstance(item, basestring):
                 index = list_value.index(item)
@@ -135,6 +156,12 @@ def _super_munger(mungie):
                 _super_munger(mungie=item)
 
     for key, value in mungie.items():
+
+        if key == 'run_list':
+            run_list = mungie[key]
+            if 'role[rpc-support]' in run_list:
+                run_list.pop(run_list.index('role[rpc-support]'))
+
         new_key, discard_fact = replacer(key)
         if discard_fact is True:
             mungie[str(new_key)] = value
@@ -154,6 +181,8 @@ def _super_munger(mungie):
 
 
 def environment(args, env_name=None):
+    """Backup and then Munge all of the environment values."""
+
     chefserver = open_chef_connection(args)
     if env_name is None:
         env_name = args.get('name')
@@ -175,6 +204,8 @@ def environment(args, env_name=None):
 
 
 def node(args):
+    """Backup and then Munge all of the node values."""
+
     chefserver = open_chef_connection(args)
     node_name = args.get('name')
     node = chefserver.get_node(name=node_name)
@@ -191,6 +222,8 @@ def node(args):
 
 
 def all_nodes_in_env(args):
+    """Backup and then Munge all nodes in an environment."""
+
     environment(args, env_name=args.get('name'))
 
     chefserver = open_chef_connection(args)
@@ -215,7 +248,11 @@ def all_nodes_in_env(args):
 
 
 def rhel_check(args, servers=None):
+    """Search for RHEL servers registered with chef."""
+
     upgrade_me = {}
+    supported_kernel = args.get('kernel')
+
     if servers is None:
         chefserver = open_chef_connection(args)
         servers = chefserver.rhel_search(env_name=args.get('name'))
@@ -237,7 +274,6 @@ def rhel_check(args, servers=None):
                 % node
             )
 
-        supported_kernel = args.get('kernel')
         if supported_kernel != version:
             upgrade_me[name] = version
 
@@ -251,6 +287,8 @@ def rhel_check(args, servers=None):
 
 
 def quantum_detect(args):
+    """Look for quantum values in everything."""
+
     chefserver = open_chef_connection(args)
     nodes = chefserver.get_all_nodes(
         args.get('name')
