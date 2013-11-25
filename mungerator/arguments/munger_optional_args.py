@@ -53,5 +53,5 @@ def chef_args(par):
                       default='quantum')
     chef.add_argument('--disable-pkg-upgrades',
                       help='In The Environment Disable Package Upgrades',
-                      action='store_false',
-                      default=True)
+                      action='store_true',
+                      default=False)
