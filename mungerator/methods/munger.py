@@ -156,12 +156,6 @@ def _super_munger(mungie):
                 _super_munger(mungie=item)
 
     for key, value in mungie.items():
-
-        if key == 'run_list':
-            run_list = mungie[key]
-            if 'role[rpc-support]' in run_list:
-                run_list.pop(run_list.index('role[rpc-support]'))
-
         new_key, discard_fact = replacer(key)
         if discard_fact is True:
             mungie[str(new_key)] = value
@@ -221,6 +215,12 @@ def node(args):
     chefserver.put_node(old_node=node_name, new_node=node_dict)
 
 
+def sanitize_run_list(run_list):
+    if 'role[rpc-support]' in run_list:
+        run_list.pop(run_list.index('role[rpc-support]'))
+    return run_list
+
+
 def all_nodes_in_env(args):
     """Backup and then Munge all nodes in an environment."""
 
@@ -232,9 +232,17 @@ def all_nodes_in_env(args):
     )
     all_nodes = [nd['name'] for nd in nodes if nd.get('name')]
     for nd in all_nodes:
-        node_dict = chefserver.get_node(name=nd).to_dict()
+        node = chefserver.get_node(name=nd)
+        node_dict = node.to_dict()
+
+        # Check the run_list on the node
+        run_list = node_dict.get('run_list')
+        if run_list is not None:
+            node_dict['run_list'] = sanitize_run_list(run_list)
+
         for attribute in ['normal', 'default', 'override']:
             attributes = node_dict.get(attribute).to_dict()
+
             backup_attributes(
                 backup_dict=attributes,
                 name='%s_%s_Attributes' % (nd, attribute)
