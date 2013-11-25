@@ -216,6 +216,8 @@ def node(args):
 
 
 def sanitize_run_list(run_list):
+    """Look for and remove the rpc-support role."""
+
     if 'role[rpc-support]' in run_list:
         run_list.pop(run_list.index('role[rpc-support]'))
     return run_list
