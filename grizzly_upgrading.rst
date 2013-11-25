@@ -46,12 +46,6 @@ Ubuntu
 -> Notes
   Not required but I recommend it, clean all packages before running the upgrade. run ``apt-get clean``
 
--> Ceilometer
-  Install python-warlock, python-novaclient, babel. run ``apt-get -y install python-warlock python-novaclient babel``. These packages seem to not be updated as deps in the new packages. This is likely a bug upstream with the packages.  Also we should look at including these packages in the cookbook as supplementary packages so that even if ubuntu does not fix the issue, we have our deployment covered.
-
--> Horizon
-  Install openstack-dashboard python-django-horizon. run ``apt-get install openstack-dashboard python-django-horizon`` These packages also seem to not be updated when the stock openstack-dashboard is upgraded. This is also likely an issue with the upstream packages. we should add them to the cookbooks to cover our selves when a user is upgrading.
-
 -> QEMU
   If you are running qemu, and installing package upgrades, you will have issues with the old package not upgrading because of dependency problems. To resolve this you can simple run the following. ``apt-get update && apt-get remove qemu-utils && apt-get install qemu-utils``.
 
