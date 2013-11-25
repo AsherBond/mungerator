@@ -51,16 +51,6 @@ def disable_rhel_check_argument():
     return rhel
 
 
-def name_argument(help_info=None):
-    par = argparse.ArgumentParser(add_help=False)
-    par.add_argument('--name',
-                     required=True,
-                     metavar='',
-                     help=help_info,
-                     default=None)
-    return par
-
-
 def env_args(subparser):
     name = name_argument(help_info=NAME_HELP_STR)
     disable = disable_rhel_check_argument()

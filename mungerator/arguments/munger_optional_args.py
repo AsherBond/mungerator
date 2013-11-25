@@ -14,13 +14,14 @@
 
 import os
 
-ENV = os.environ
-HOME = ENV.get('HOME', '/root/')
-CHEF_HOME = '%s/.chef' % HOME
-
 
 def chef_args(par):
     """Chef Server."""
+
+    ENV = os.environ
+    HOME = ENV.get('HOME', '/root/')
+    CHEF_HOME = '%s/.chef' % HOME
+
     chef = par.add_argument_group('Chef Server Configuration Group')
     chef.add_argument('--auth-url',
                       metavar='',
