@@ -52,6 +52,12 @@ Ubuntu
 -> Horizon
   Install openstack-dashboard python-django-horizon. run ``apt-get install openstack-dashboard python-django-horizon`` These packages also seem to not be updated when the stock openstack-dashboard is upgraded. This is also likely an issue with the upstream packages. we should add them to the cookbooks to cover our selves when a user is upgrading.
 
+-> QEMU
+  If you are running qemu, and installing package upgrades, you will have issues with the old package not upgrading because of dependency problems. To resolve this you can simple run the following. ``apt-get update && apt-get remove qemu-utils && apt-get install qemu-utils``.
+
+-> Neutron
+  Neutron has some supporting packages that will need to upgrade post chef run if they are not upgrading during the run. [python-cmd2, python-pyparsing]. While no adverse effects have been noted by not upgrading these packages you can resolve this issue with following. ``apt-get update && apt-get install python-cmd2 python-pyparsing``
+
 
 RHEL
 ^^^^
