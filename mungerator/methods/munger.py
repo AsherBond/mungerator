@@ -79,11 +79,16 @@ def _package_upgrades(args, env_attrs):
     return env_attrs
 
 
-def quantum_db_check(args, env_attrs):
+def quantum_name_check(args, env_attrs):
     overrides = env_attrs.get('override_attributes')
     if 'quantum' in overrides:
         new_neutron = overrides.get('quantum')
         if new_neutron is not None:
+            # Check for the service user in the environment
+            if new_neutron.get('service_user') is None:
+                new_neutron['service_user'] = args.get('service_user')
+
+            # Check the database setting for Quantum
             database = new_neutron.get('db')
             if database is not None:
                 if 'name' not in database:
@@ -98,7 +103,7 @@ def quantum_db_check(args, env_attrs):
 
 
 def _super_munger(mungie):
-    exempt = ['name', 'database', 'db', 'username']
+    exempt = ['name', 'database', 'db', 'username', 'service_user']
 
     def check_replace(rv):
         if 'quantum' in rv:
@@ -160,7 +165,7 @@ def environment(args, env_name=None):
     )
     new_env = _package_upgrades(
         args=args, env_attrs=_super_munger(
-            quantum_db_check(
+            quantum_name_check(
                 args, env_attrs
             )
         )
@@ -262,6 +267,7 @@ def quantum_detect(args):
             if db is not None:
                 detected.append(
                     {'node': node_name,
+                     'service_user': quantum.get('service_user', 'UNKNOWN'),
                      'db_name': db.get('name', 'UNKNOWN'),
                      'username': db.get('usesr', 'UNKNOWN'),
                      'password': db.get('password', 'UNKNOWN')}
@@ -270,5 +276,6 @@ def quantum_detect(args):
         print(_notice(message='QUANTUM FOUND IN THE ENVIRONMENT'))
         for item in detected:
             notice = ('Node: %(node)s|DB Name: %(db_name)s|'
-                      'Username: %(username)s|Password: %(password)s' % item)
+                      ' Service User: %(service_user)s|'
+                      ' Username: %(username)s|Password: %(password)s' % item)
             print(notice.replace('|', '\t| '))

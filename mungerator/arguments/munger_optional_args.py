@@ -45,6 +45,11 @@ def chef_args(par):
                       help=('Username for the Neutron Database,'
                             ' Default: "%(default)s"'),
                       default='quantum')
+    chef.add_argument('--service-user',
+                      metavar='',
+                      help=('Username for the Openstack Service that controls'
+                            ' Neutron, Default: "%(default)s"'),
+                      default='quantum')
     chef.add_argument('--disable-pkg-upgrades',
                       help='In The Environment Disable Package Upgrades',
                       action='store_false',
