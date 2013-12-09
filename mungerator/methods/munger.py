@@ -94,6 +94,12 @@ def quantum_name_check(args, env_attrs):
     """Check all attributes for the quantum name if its found."""
 
     overrides = env_attrs.get('override_attributes')
+
+    ha = overrides.get('ha', {})
+    haas = ha.get('available_services', {})
+    hans = haas.get('neutron-server', {})
+    hans['namespace'] = args.get('service_user')
+
     if 'quantum' in overrides:
         new_neutron = overrides.get('quantum')
         if new_neutron is not None:
@@ -112,6 +118,7 @@ def quantum_name_check(args, env_attrs):
                 db = new_neutron['db'] = {}
                 db['name'] = args.get('db_name')
                 db['username'] = args.get('db_username')
+
     return env_attrs
 
 
