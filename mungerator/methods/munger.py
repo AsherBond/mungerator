@@ -94,6 +94,20 @@ def quantum_name_check(args, env_attrs):
     """Check all attributes for the quantum name if its found."""
 
     overrides = env_attrs.get('override_attributes')
+
+    ha = overrides.get('ha')
+    if ha is None:
+        ha = overrides['ha'] = {}
+
+    haas = ha.get('available_services')
+    if haas is None:
+        haas = ha['available_services'] = {}
+
+    hans = haas.get('neutron-server')
+    if hans is None:
+        hans = haas['neutron-server'] = {}
+    hans['namespace'] = args.get('service_user')
+
     if 'quantum' in overrides:
         new_neutron = overrides.get('quantum')
         if new_neutron is not None:
@@ -112,13 +126,19 @@ def quantum_name_check(args, env_attrs):
                 db = new_neutron['db'] = {}
                 db['name'] = args.get('db_name')
                 db['username'] = args.get('db_username')
+
     return env_attrs
 
 
 def _super_munger(mungie):
     """Munge all attributes except the ones in the except list."""
 
-    exempt = ['name', 'database', 'db', 'username', 'service_user']
+    exempt = ['name',
+              'database',
+              'db',
+              'username',
+              'service_user',
+              'namespace']
 
     def check_replace(rv):
         """If quantum is found replace it."""

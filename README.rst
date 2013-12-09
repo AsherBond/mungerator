@@ -29,6 +29,14 @@ Installation:
   If you would like to install the application, install the package ``python-dev`` and ``python-setuptools`` then from the mungerator directory run ``python setup.py install``.
 
 
+Available Chef Environment Variables::
+
+  * CHEF_SERVER_URL = URL to chef server
+  * CHEF_SERVER_PEM = Path to chef server PEM file
+  * CHEF_CLIENT_NAME = Name of the administrative chef client
+
+
+
 License
 ^^^^^^^
 
