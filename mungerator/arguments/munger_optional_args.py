@@ -26,7 +26,8 @@ def chef_args(par):
     chef.add_argument('--auth-url',
                       metavar='',
                       help='Chef Server URL, Default: "%(default)s"',
-                      default='https://127.0.0.1')
+                      default=ENV.get('CHEF_SERVER_URL',
+                                      'https://127.0.0.1'))
     chef.add_argument('--client-key',
                       metavar='',
                       help='Default: "%(default)s"',
