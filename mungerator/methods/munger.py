@@ -95,19 +95,6 @@ def quantum_name_check(args, env_attrs):
 
     overrides = env_attrs.get('override_attributes')
 
-    ha = overrides.get('ha')
-    if ha is None:
-        ha = overrides['ha'] = {}
-
-    haas = ha.get('available_services')
-    if haas is None:
-        haas = ha['available_services'] = {}
-
-    hans = haas.get('neutron-server')
-    if hans is None:
-        hans = haas['neutron-server'] = {}
-    hans['namespace'] = args.get('service_user')
-
     if 'quantum' in overrides:
         new_neutron = overrides.get('quantum')
         if new_neutron is not None:
